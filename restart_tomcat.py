@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+'一个删除缓存重启tomcat的脚本，支持从/bin目录的脚本和从系统服务中关闭和启动tomcat。'
+
+
+__author__ = 'chenzh'
+
 import os, sys, platform, shutil
 
 def delete_cache(tomcat_home):
@@ -62,6 +70,10 @@ def stop_tomcat_server(tomcat_server, os_type):
     os.system(cmd)
 
 if __name__ == "__main__":
+    """
+    如果用系统服务启动和关闭tomcat，需要系统管理员权限。这可能需要会在触发重启脚本的时候暴露管理员密码。
+    所以强烈推荐用tomcat/bin目录下的脚本启动和关闭tomcat
+    """
     args_length = len(sys.argv)
     # 参数默认值
     # 脚本默认放在webapps目录下, os.path.dirname(os.getcwd())获取上一级目录
