@@ -3,6 +3,7 @@ import mysql
 from mysql.connector import ProgrammingError
 from mysql.connector.abstracts import MySQLCursorAbstract
 import json
+import datetime
 
 
 @click.command()
@@ -11,6 +12,7 @@ import json
 def test_func(oper, content):
     """Simple program that greets NAME for a total of COUNT times."""
     print(oper)
+    start_time = datetime.datetime.now();
     if oper == 'config':
         host = ''
     elif oper == "field":
@@ -28,8 +30,16 @@ def test_func(oper, content):
             search_content(cursor, name, content)
         cursor.close()
         mysql_conn.close()
+    elif oper == 'test':
+        config = get_config()
+        mysql_conn = mysql.connector.connect(**config)
+        cursor = mysql_conn.cursor()
+        tables_name = get_tables_name(cursor)
+        print(tables_name)
     else:
         print("无效--oper")
+    end_time = datetime.datetime.now();
+    print("运行时间 = " + str(end_time - start_time) + "")
 
 
 def check_cursor(cursor):
@@ -56,7 +66,8 @@ def get_tables_name(cursor):
 
 
 def get_table_field(cursor, table_name):
-    sql = "select COLUMN_NAME from information_schema.COLUMNS where table_name = '" + table_name + "'"
+    database = 'zcplatform1'
+    sql = "select COLUMN_NAME from information_schema.COLUMNS where table_name = '" + table_name + "' and table_schema = '" + database + "'"
     cursor = check_cursor(cursor)
     cursor.execute(sql)
     files_name = cursor.fetchall()
@@ -88,6 +99,7 @@ def run_search_data(cursor, table_name, field_name, content, first_field_name, f
             print(table_name + "表超过一百条匹配")
         else:
             sql = "select * from " + table_name + " where `" + field_name + "` like '%" + content + "%'"
+            print("search sql = " + sql)
             cursor.execute(sql)
             result = cursor.fetchall()
             for r_item in result:
