@@ -1,31 +1,26 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-'一个删除缓存重启tomcat的脚本，支持从/bin目录的脚本和从系统服务中关闭和启动tomcat。'
-
-
-__author__ = 'chenzh'
-
 import os, sys, platform, shutil
 
 def delete_cache(tomcat_home):
     """
     delete tomcat cache: delete tomcat_home/work/Catalina and tomcat_home/conf/Catalina
     """
-    work_dir_cache_path = tomcat_home + r"\work\Catalina"
-    conf_dir_cache_path = tomcat_home + r"\conf\Catalina"
+    # 用os的函数屏蔽系统差异
+    # work_dir_cache_path = tomcat_home + r"\work\Catalina"
+    # conf_dir_cache_path = tomcat_home + r"\conf\Catalina"
+    work_dir_cache_path = os.path.join(tomcat_home, 'work', 'Catalina')
+    conf_dir_cache_path = os.path.join(tomcat_home, 'conf', 'Catalina')
     if os.path.exists(work_dir_cache_path):
         shutil.rmtree(work_dir_cache_path)
-    if os.path.exists(os.path.exists(conf_dir_cache_path)):
+    if os.path.exists(conf_dir_cache_path):
         shutil.rmtree(conf_dir_cache_path)
 
 def stop_tomcat_script(tomcat_home, os_type):
     """
-    run tomcat_home/bin/shutdown.bat / tomcat_home/bin/shutdown.sh 
+    run tomcat_home/bin/shutdown.bat / tomcat_home/bin/shutdown.sh
     """
     cmd = ''
     if os_type == 'Windows':
-        cmd = tomcat_home + "\\bin\\shutdown.bat"
+        cmd = tomcat_home + r"\bin\shutdown.bat"
     elif os_type == 'Linux':
         cmd = tomcat_home + "/bin/shutdown.sh"
     # os.popen(cmd)
@@ -34,11 +29,11 @@ def stop_tomcat_script(tomcat_home, os_type):
 
 def start_tomcat_script(tomcat_home, os_type):
     """
-    run tomcat_home/bin/startup.bat / tomcat_home/bin/startup.sh 
+    run tomcat_home/bin/startup.bat / tomcat_home/bin/startup.sh
     """
     cmd = ''
     if os_type == 'Windows':
-        cmd = tomcat_home + '\\bin\\startup.bat'
+        cmd = tomcat_home + r'\bin\startup.bat'
     elif os_type == 'Linux':
         cmd = tomcat_home + "/bin/startup.sh"
     # os.popen(cmd)
@@ -70,14 +65,11 @@ def stop_tomcat_server(tomcat_server, os_type):
     os.system(cmd)
 
 if __name__ == "__main__":
-    """
-    如果用系统服务启动和关闭tomcat，需要系统管理员权限。这可能需要会在触发重启脚本的时候暴露管理员密码。
-    所以强烈推荐用tomcat/bin目录下的脚本启动和关闭tomcat
-    """
     args_length = len(sys.argv)
     # 参数默认值
-    # 脚本默认放在webapps目录下, os.path.dirname(os.getcwd())获取上一级目录
-    tomcat_home = os.path.dirname(os.getcwd())
+    # 脚本默认放在webapps目录下, 获取tomcat_home目录
+    curr_path = os.path.dirname(os.path.abspath(__file__))
+    tomcat_home = os.path.dirname(curr_path)
     # 类型 1.脚本启动 2.服务启动, 默认是脚本启动
     tocmat_type = 1
     # tomcat服务名，默认为tomcat
@@ -98,16 +90,19 @@ if __name__ == "__main__":
     if os_type != 'Windows' and os_type != 'Linux':
         print('运行失败，目前只支持Windows和Linux操作系统')
         exit(0)
+    # """
     if tocmat_type == 2:
-        # ! 服务启动需要获取管理员权限 Linux用base和Windows用bat获取
-        # 服务启动 完善服务启动
+        # !服务启动需要获取管理员权限,Linux可以在base shell脚本里获取和Windows可以在bat脚本获取,用服务会暴露管理员账号密码,强烈建议不要用这个
+        # 服务启动
         stop_tomcat_server(tomcat_server_name, os_type)
         delete_cache(tomcat_home)
         start_tomcat_server(tomcat_server_name, os_type)
     else:
-        # 脚本启动 
+        # 脚本启动
         stop_tomcat_script(tomcat_home, os_type)
         delete_cache(tomcat_home)
         start_tomcat_script(tomcat_home, os_type)
+    # """
+    print("tomcat_home: " + tomcat_home)
     print("重新启动完成")
     
