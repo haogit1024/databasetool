@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+' 一个tomcat重启脚本，会删除 '
+
+
+__author__ = 'chenzh'
+
 import os, sys, platform, shutil
 
 def delete_cache(tomcat_home):
