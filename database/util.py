@@ -8,20 +8,20 @@ conn = pymysql.connect(
 )
 
 cusor = conn.cursor()
-# cusor.execute('SELECT VERSION()')
-# res = cusor.fetchone()
-# print('res: %s' % res)
 
-def execute_sql(sql):
-    cusor.execute(sql)
-    col = cusor.description
-    res = cusor.fetchall()
-    print(col)
-    print('--------')
-    print(res)
 
-# collation_database
-# innodb_default_row_format
+class DataBaseUtil(object):
+    def __init__(self):
+        pass
+
+    def execute_sql(self, sql):
+        cusor.execute(sql)
+        col = cusor.description
+        # TODO 测试col是什么类型和值
+        print(col)
+        res = cusor.fetchall()
+        return res
+
+
 if __name__ == "__main__":
-    sql = input('请输入sql: ')
-    execute_sql(sql)
+    pass
