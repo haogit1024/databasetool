@@ -150,22 +150,11 @@ if __name__ == "__main__":
     "user": "root",
     "password": "root",
     "database": "lonely"}
-    # db_util = DataBaseUtil(host="localhost",
-    # user="root",
-    # password="root",
-    # database="lonely", port=3306)
-    db_util = DataBaseUtil(host="120.77.14.136",
-                           user="xiangmuzu",
-                           password="cy125566%df",
-                           database="yct_server_bak",port=3306)
+    db_util = DataBaseUtil(host="localhost",
+    user="root",
+    password="root",
+    database="lonely", port=3306)
 
-    # db_util = DataBaseUtil(host="5845a7f5365e3.gz.cdb.myqcloud.com",
-    #                        user="zcbus",
-    #                        password="zcbusEDS!@#qa",
-    #                        database="zcplatform1", port=5832)
-    # tables = db_util.list_tables()
-    # db_util.list_fields(tables[0])
-    # print(db_util.search_field_content("id"))
     # TODO 找一个更好的计算运行时间的方法
     print("runing......;")
     # start = time.process_time()
