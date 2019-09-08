@@ -4,7 +4,7 @@
 
 """一个更新通知"""
 
-import request
+import requests
 
 def tx_manga():
     # https://ac.qq.com/Comic/comicInfo/id/505430 海贼王地址

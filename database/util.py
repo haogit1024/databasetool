@@ -1,4 +1,6 @@
 import pymysql
+import time
+from multiprocessing import Pool, cpu_count
 
 
 class DataBaseUtil(object):
@@ -15,11 +17,13 @@ class DataBaseUtil(object):
         self.user = kw['user']
         self.password = kw['password']
         self.database = kw['database']
+        self.port = kw['port']
         conn = pymysql.connect(
             host=self.host,
             user=self.user,
             password=self.password,
-            database=self.database
+            database=self.database,
+            port=self.port
         )
         self.cusor = conn.cursor()
         self.__tables = []
@@ -53,7 +57,14 @@ class DataBaseUtil(object):
         return self.__reduce(res)
 
     def search_field_content(self, content: str) -> [str]:
-        # TODO 改为内部方法并添加sql查询方法
+        return self.__search_field_by_string(content)
+
+    def __search_field_by_string(self, content: str) -> [str]:
+        """
+        程序遍历查找字段和用sql查找效率差不多(数据库性能不错的情况下)
+        :param content:
+        :return:
+        """
         res = []
         tables = self.list_tables()
         for table in tables:
@@ -63,30 +74,104 @@ class DataBaseUtil(object):
                     res.append("table: %s, field: %s" % (table, field))
         return res
 
-    def search_value_content(self, content: str, type='s') -> [str]:
-        if type == 'm':
-            res = self.__multi_pro_search_value(content)
+    def __search_field_by_sql(self, content: str) -> [str]:
+        """
+        sql查找字段(数据库性能不错的情况下)和程序遍历效率差不多
+        :param content:
+        :return:
+        """
+        tables = self.list_tables()
+        res = []
+        for table in tables:
+            sql = "select COLUMN_NAME from information_schema.COLUMNS where table_name = '%s' and table_schema = '%s'"
+            sql = sql % (table, self.database)
+            sql = sql + " and COLUMN_NAME like '%" + content + "%'"
+            sql_res = self.__execute_sql(sql)
+            sql_res = self.__reduce(sql_res)
+            for res_item in sql_res:
+                res.append("table: %s, field: %s" % (table, res_item))
+        return res
+
+    def search_value_content(self, content: str, t='s') -> [str]:
+        if t == 'm':
+            res = self.__multi_processes_search_value(content)
         else:
             res = self.__simple_search_value(content)
         return res
 
     def __simple_search_value(self, content: str) -> [str]:
-        # TODO 完善
-        pass
+        res = []
+        tables = self.list_tables()
+        for table in tables:
+            fields = self.list_fields(table)
+            first_field = fields[0]
+            for field in fields:
+                sql_res = self.__search_field_value_content_task(table, first_field, field, content, res)
+                # for col_vale in sql_res:
+                #     res.append("table: %s, firstField: %s, firstValue: %s. field: %s, value: %s"
+                #            % (table, first_field, col_vale[0], field, col_vale[1]))
+        return res
 
-    def __multi_pro_search_value(self, content: str) -> [str]:
-        # TODO 完善
-        pass
+    def __multi_processes_search_value(self, content: str) -> [str]:
+        res =[]
+        search_pool = Pool(processes=cpu_count() * 2)
+        tables = self.list_tables()
+        for table in tables:
+            fields = self.list_fields(table)
+            first_field = fields[0]
+            for field in fields:
+                search_pool.apply_async(self.__search_field_value_content_task(table, first_field, field, content, res), args=())
+        search_pool.close()
+        search_pool.join()
+        return res
+
+    def __search_field_value_content_task(self, table: str, first_field: str, field: str, content: str, r=[]) -> ([str, str]):
+        sql = r"select `%s`, `%s` from `%s` where `%s` like "
+        sql = sql % (first_field, field, table, field)
+        sql = sql + " '%" + content + "%'"
+        # print(sql)
+        try:
+            sql_res = self.__execute_sql(sql)
+            for col_vale in sql_res:
+                r.append("table: %s, firstField: %s, firstValue: %s. field: %s, value: %s"
+                           % (table, first_field, col_vale[0], field, col_vale[1]))
+            return sql_res
+        except Exception as e:
+            print("__search_field_value_content_task exception" , e)
+            print("error sql: " + sql)
+            return ()
+
+    def __testc(self):
+        print("test")
+
 
 if __name__ == "__main__":
     data_info = {"host": "localhost",
     "user": "root",
     "password": "root",
     "database": "lonely"}
-    db_util = DataBaseUtil(host="localhost",
-    user="root",
-    password="root",
-    database="lonely")
-    tables = db_util.list_tables()
-    db_util.list_fields(tables[0])
+    # db_util = DataBaseUtil(host="localhost",
+    # user="root",
+    # password="root",
+    # database="lonely", port=3306)
+    db_util = DataBaseUtil(host="120.77.14.136",
+                           user="xiangmuzu",
+                           password="cy125566%df",
+                           database="yct_server_bak",port=3306)
+
+    # db_util = DataBaseUtil(host="5845a7f5365e3.gz.cdb.myqcloud.com",
+    #                        user="zcbus",
+    #                        password="zcbusEDS!@#qa",
+    #                        database="zcplatform1", port=5832)
+    # tables = db_util.list_tables()
+    # db_util.list_fields(tables[0])
     # print(db_util.search_field_content("id"))
+    # TODO 找一个更好的计算运行时间的方法
+    print("runing......;")
+    # start = time.process_time()
+    s = db_util.search_value_content("189", 'm')
+    # db_util._DataBaseUtil__search_field_value_content_task('order', 'id', 'user_phone', '189')
+    # elapsed = (time.process_time() - start)
+    # print("Time used:", elapsed)
+    print(s)
+    # print(cpu_count())
