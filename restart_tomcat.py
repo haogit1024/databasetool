@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-' 一个tomcat重启脚本，会删除 '
+""" 一个tomcat重启脚本，会删除 """
 
 
 __author__ = 'chenzh'
 
 import os, sys, platform, shutil
+
 
 def delete_cache(tomcat_home):
     """
@@ -22,6 +23,7 @@ def delete_cache(tomcat_home):
     if os.path.exists(conf_dir_cache_path):
         shutil.rmtree(conf_dir_cache_path)
 
+
 def stop_tomcat_script(tomcat_home, os_type):
     """
     run tomcat_home/bin/shutdown.bat / tomcat_home/bin/shutdown.sh
@@ -34,6 +36,7 @@ def stop_tomcat_script(tomcat_home, os_type):
     # os.popen(cmd)
     os.system(cmd)
     print(cmd)
+
 
 def start_tomcat_script(tomcat_home, os_type):
     """
@@ -48,6 +51,7 @@ def start_tomcat_script(tomcat_home, os_type):
     os.system(cmd)
     print(cmd)
 
+
 def start_tomcat_server(tomcat_server, os_type):
     """
     run net start server_name / service server_name start
@@ -59,6 +63,7 @@ def start_tomcat_server(tomcat_server, os_type):
         cmd = 'service {} start'.format(tomcat_server)
     print(cmd)
     os.system(cmd)
+
 
 def stop_tomcat_server(tomcat_server, os_type):
     """
@@ -72,7 +77,9 @@ def stop_tomcat_server(tomcat_server, os_type):
     print(cmd)
     os.system(cmd)
 
+
 if __name__ == "__main__":
+    # TODO 去掉服务启动，方法代码可以保留，但是main里去掉
     args_length = len(sys.argv)
     # 参数默认值
     # 脚本默认放在webapps目录下, 获取tomcat_home目录
@@ -89,10 +96,10 @@ if __name__ == "__main__":
     # 第二个参数为tomcat_home目录路径或者服务名
     if args_length > 2:
         tomcat_home = sys.argv[2]
-    # 第三个参数为tocmat服务名
+    # 第三个参数为tomcat服务名
     if args_length > 3:
         tomcat_server_name = sys.argv[3]
-    # 获取操作系统类型 Windows / Liunx 
+    # 获取操作系统类型 Windows / Linux
     os_type = platform.system()
     print('os_type=', os_type)
     if os_type != 'Windows' and os_type != 'Linux':
@@ -113,4 +120,3 @@ if __name__ == "__main__":
     # """
     print("tomcat_home: " + tomcat_home)
     print("重新启动完成")
-    
