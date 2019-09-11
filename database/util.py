@@ -18,6 +18,13 @@ class DataBaseUtil(object):
         self.password = kw['password']
         self.database = kw['database']
         self.port = kw['port']
+
+        self.cusor = self.__connect()
+        self.__tables = []
+        self._power_mode = False
+        # self.__testc()
+
+    def __connect(self):
         conn = pymysql.connect(
             host=self.host,
             user=self.user,
@@ -25,13 +32,31 @@ class DataBaseUtil(object):
             database=self.database,
             port=self.port
         )
-        self.cusor = conn.cursor()
-        self.__tables = []
+        return conn.cursor()
+
+    def __get_connect(self):
+        pass
+
+    @property
+    def power_mode(self):
+        return self._power_mode
+
+    @power_mode.setter
+    def power_mode(self, is_power_mode):
+        if is_power_mode:
+            # 开启性能模式，初始化线程池
+            pass
+        else:
+            # 关闭性能模式，关闭线程池
+            pass
 
     def __execute_sql(self, sql: str):
         self.cusor.execute(sql)
         res = self.cusor.fetchall()
         return res
+
+    def __power_excute_sql(self, sql):
+        pass
 
     def __reduce(self, two_d_arr) -> []:
         """
@@ -141,7 +166,12 @@ class DataBaseUtil(object):
             print("error sql: " + sql)
             return ()
 
+    def close(self):
+        # 关闭所有线程池
+        pass
+
     def __testc(self):
+        print(self.database)
         print("test")
 
 
@@ -149,18 +179,19 @@ if __name__ == "__main__":
     data_info = {"host": "localhost",
     "user": "root",
     "password": "root",
-    "database": "lonely"}
+    "database": "yct_server"}
     db_util = DataBaseUtil(host="localhost",
     user="root",
     password="root",
-    database="lonely", port=3306)
+    database="yct_server", port=3306)
 
     # TODO 找一个更好的计算运行时间的方法
-    print("runing......;")
-    # start = time.process_time()
-    s = db_util.search_value_content("189", 'm')
+    print("runing......")
+    start = time.time()
+    s = db_util.search_value_content("18813365177", 'm')
+    print(time.time() - start)
     # db_util._DataBaseUtil__search_field_value_content_task('order', 'id', 'user_phone', '189')
     # elapsed = (time.process_time() - start)
     # print("Time used:", elapsed)
-    print(s)
+    # print(s)
     # print(cpu_count())
