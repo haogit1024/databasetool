@@ -9,7 +9,7 @@ __author__ = 'chenzh'
 import os, sys, platform, shutil
 
 
-def delete_cache(tomcat_home):
+def delete_tomcat_cache(tomcat_home):
     """
     delete tomcat cache: delete tomcat_home/work/Catalina and tomcat_home/conf/Catalina
     """
@@ -78,6 +78,24 @@ def stop_tomcat_server(tomcat_server, os_type):
     os.system(cmd)
 
 
+def delete_wabapp_cache(tomcat_home: str):
+    webapp_path = os.path.join(tomcat_home, r'webapp')
+    war_file_list = []
+    file_list = os.listdir(webapp_path)
+    print(file_list)
+    war_file_list = []
+    if len(file_list) > 0:
+        for f in file_list:
+            if r'.' in f:
+                file_section = f.split(r'.')
+                if file_section[1] == 'war':
+                    war_file_list.append(file_section[0])
+    for war_file_cache in war_file_list:
+        war_file_cache = os.path.join(webapp_path, war_file_cache)
+        if os.path.exists(war_file_cache) and os.path.isdir(war_file_cache):
+            shutil.rmtree(war_file_cache)
+
+
 if __name__ == "__main__":
     # TODO 去掉服务启动，方法代码可以保留，但是main里去掉
     args_length = len(sys.argv)
@@ -110,12 +128,14 @@ if __name__ == "__main__":
         # !服务启动需要获取管理员权限,Linux可以在base shell脚本里获取和Windows可以在bat脚本获取,用服务会暴露管理员账号密码,强烈建议不要用这个
         # 服务启动
         stop_tomcat_server(tomcat_server_name, os_type)
-        delete_cache(tomcat_home)
+        delete_tomcat_cache(tomcat_home)
+        delete_wabapp_cache(tomcat_home)
         start_tomcat_server(tomcat_server_name, os_type)
     else:
         # 脚本启动
         stop_tomcat_script(tomcat_home, os_type)
-        delete_cache(tomcat_home)
+        delete_tomcat_cache(tomcat_home)
+        delete_wabapp_cache(tomcat_home)
         start_tomcat_script(tomcat_home, os_type)
     # """
     print("tomcat_home: " + tomcat_home)
