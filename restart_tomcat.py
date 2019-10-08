@@ -79,7 +79,7 @@ def stop_tomcat_server(tomcat_server, os_type):
 
 
 def delete_wabapp_cache(tomcat_home: str):
-    webapp_path = os.path.join(tomcat_home, r'webapp')
+    webapp_path = os.path.join(tomcat_home, r'webapps')
     war_file_list = []
     file_list = os.listdir(webapp_path)
     print(file_list)
