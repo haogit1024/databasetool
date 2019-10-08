@@ -90,10 +90,9 @@ def delete_wabapp_cache(tomcat_home: str):
                 file_section = f.split(r'.')
                 if file_section[1] == 'war':
                     war_file_list.append(file_section[0])
-    for war_file_cache in war_file_list:
-        war_file_cache = os.path.join(webapp_path, war_file_cache)
-        if os.path.exists(war_file_cache) and os.path.isdir(war_file_cache):
-            shutil.rmtree(war_file_cache)
+                    war_file_cache = os.path.join(webapp_path, file_section[0])
+                    if os.path.exists(war_file_cache) and os.path.isdir(war_file_cache):
+                        shutil.rmtree(war_file_cache)
 
 
 if __name__ == "__main__":
