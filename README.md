@@ -5,5 +5,5 @@
 ## How To Run
 
 ```base
-conda install mysql-connector
+conda install pymysql
 ```
