@@ -6,7 +6,7 @@
 
 __author__ = 'chenzh'
 
-import os, sys, platform, shutil
+import os, sys, platform, shutil, time
 
 
 def delete_tomcat_cache(tomcat_home):
@@ -35,7 +35,9 @@ def stop_tomcat_script(tomcat_home, os_type):
         cmd = tomcat_home + "/bin/shutdown.sh"
     # os.popen(cmd)
     os.system(cmd)
-    print(cmd)
+    print('运行: ' + cmd + " 结束")
+    # 停顿2秒, 防止tomcat还没停止的时候重新启动了tomcat
+    time.sleep(2)
 
 
 def start_tomcat_script(tomcat_home, os_type):
@@ -49,7 +51,7 @@ def start_tomcat_script(tomcat_home, os_type):
         cmd = tomcat_home + "/bin/startup.sh"
     # os.popen(cmd)
     os.system(cmd)
-    print(cmd)
+    print('运行: ' + cmd + " 结束")
 
 
 def start_tomcat_server(tomcat_server, os_type):
@@ -76,6 +78,8 @@ def stop_tomcat_server(tomcat_server, os_type):
         cmd = 'service {} stop'.format(tomcat_server)
     print(cmd)
     os.system(cmd)
+    # 停顿一秒, 防止tomcat还没停止的时候重新启动了tomcat
+    time.sleep(1)
 
 
 def delete_wabapp_cache(tomcat_home: str):

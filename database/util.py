@@ -166,6 +166,9 @@ class DataBaseUtil(object):
             print("error sql: " + sql)
             return ()
 
+    def __count_all(self):
+        pass
+
     def close(self):
         # 关闭所有线程池
         pass
