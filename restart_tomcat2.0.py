@@ -48,12 +48,6 @@ def stop_tomcat(port: str):
     prot_cmd = 'lsof -i:{}'.format(port)
     print('prot_cmd: ' + prot_cmd)
     cmd_ret = os.popen(prot_cmd)
-    # header_line = cmd_ret.readline()
-    # content_line = cmd_ret.readline()
-    # print(content_line)
-    # pid = __get_pid(content_line)
-    # kill_cmd = 'kill -s 9 ' + pid
-    # print('kill_cmd: ' + kill_cmd)
     lines = cmd_ret.readlines()
     print("cmd_ret:")
     print(lines)
@@ -63,8 +57,6 @@ def stop_tomcat(port: str):
         kill_cmd = 'kill -s 9 ' + pid
         print('kill_cmd: ' + kill_cmd)
         os.popen(kill_cmd)
-        # 停顿1秒
-        time.sleep(1)
 
 
 def __get_pid(line: str):
@@ -86,8 +78,6 @@ def start_tomcat_server(tomcat_server):
     # os.popen(cmd)
     os.system(cmd)
     print('运行: ' + cmd + " 结束")
-    # 停顿2秒, 防止tomcat还没停止的时候重新启动了tomcat
-    time.sleep(2)
 
 
 if __name__ == "__main__":
