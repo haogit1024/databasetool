@@ -27,6 +27,7 @@ def delete_tomcat_cache(tomcat_home: str):
     if os.path.exists(conf_dir_cache_path):
         shutil.rmtree(conf_dir_cache_path)
 
+
 def delete_wabapp_cache(tomcat_home: str):
     webapp_path = os.path.join(tomcat_home, r'webapps')
     war_file_list = []
@@ -70,7 +71,7 @@ def __get_pid(line: str):
             return item
 
 
-def start_tomcat_server(tomcat_server):
+def start_tomcat_server(tomcat_home):
     """
     run tomcat_home/bin/startup.sh
     """
@@ -85,9 +86,15 @@ if __name__ == "__main__":
     if args_length < 2:
         print("请输入端口号")
         exit(0)
-    curr_path = os.path.dirname(os.path.abspath(__file__))
-    tomcat_home = os.path.dirname(curr_path)
+    # 第一个参数是端口号, 第二个参数是tomcat_home
     port = sys.argv[1]
+    if args_length == 3:
+        tomcat_home = sys.argv[2]
+    else:
+        # 如果没有第二个参数, 则从当前路径读取(webapps目录下)
+        curr_path = os.path.dirname(os.path.abspath(__file__))
+        # 获取上一级路径
+        tomcat_home = os.path.dirname(curr_path)
     print("port: " + port)
     stop_tomcat(port)
     delete_tomcat_cache(tomcat_home)
