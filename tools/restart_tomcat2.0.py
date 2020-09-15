@@ -55,7 +55,7 @@ def stop_tomcat(port: str):
     lines_len = len(lines)
     if lines_len == 2:
         pid = __get_pid(lines[1])
-        kill_cmd = 'kill -s 9 ' + pid
+        kill_cmd = 'kill -9 ' + pid
         print('kill_cmd: ' + kill_cmd)
         os.popen(kill_cmd)
 
